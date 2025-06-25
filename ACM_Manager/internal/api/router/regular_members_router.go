@@ -11,15 +11,6 @@ func registerRegularMembersRoutes(r chi.Router) {
 		r.Post("/", handlers.CreateMembersHandler)
 		r.Delete("/", handlers.DeleteMembersHandler)
 		r.Patch("/", handlers.PatchMembersHandler)
-
-		r.Route("/{id}", func(r chi.Router) {
-			r.Get("/", handlers.GetOneMemberHandler)
-			r.Patch("/", handlers.UpdateOneMemberHandler)
-		})
-
-		r.Route("/{department}", func(r chi.Router) {
-			r.Get("/", handlers.GetMembersOfCertainDep)
-		})
 	})
 }
 
