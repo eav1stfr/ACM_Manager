@@ -13,6 +13,7 @@ func Router() http.Handler {
 
 	registerRegularMembersRoutes(r)
 	registerTaskRoutes(r)
+	registerMeetingsRouter(r)
 
 	return r
 

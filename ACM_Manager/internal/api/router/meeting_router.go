@@ -7,6 +7,8 @@ import (
 
 func registerMeetingsRouter(r chi.Router) {
 	r.Route("/meetings", func(r chi.Router) {
-		r.Get("/", handlers.GetUpcomingMeeting)
+		r.Post("/", handlers.CreateMeeting)
+		r.Delete("/", handlers.DeleteMeeting)
+		r.Get("/", handlers.GetMeetingsForWeek)
 	})
 }

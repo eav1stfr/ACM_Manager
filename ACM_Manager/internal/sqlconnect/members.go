@@ -228,3 +228,7 @@ func PatchMembersDbHandler(updates []map[string]interface{}) error {
 	}
 	return nil
 }
+
+//func getDepartmentsOfMemberDbHandler(memberId string) ([]string, error) {
+//
+//}
