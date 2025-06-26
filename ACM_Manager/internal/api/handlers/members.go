@@ -120,7 +120,6 @@ func PatchMembersHandler(w http.ResponseWriter, r *http.Request) {
 	var updates []map[string]interface{}
 	err := json.NewDecoder(r.Body).Decode(&updates)
 	if err != nil {
-		log.Println("ERR HERE 1")
 		http.Error(w, utils.InvalidRequestPayloadError.Error(), utils.InvalidRequestPayloadError.GetStatusCode())
 		return
 	}
@@ -128,7 +127,6 @@ func PatchMembersHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if appErr, ok := err.(*utils.AppError); ok {
 			http.Error(w, appErr.Error(), appErr.GetStatusCode())
-			log.Println("ERR HERE 2")
 			return
 		}
 		http.Error(w, utils.UnknownInternalServerError.Error(), utils.UnknownInternalServerError.GetStatusCode())

@@ -2,7 +2,6 @@ package main
 
 import (
 	"acmmanager/internal/api/router"
-	"acmmanager/internal/sqlconnect"
 	"crypto/tls"
 	"fmt"
 	"github.com/joho/godotenv"
@@ -18,12 +17,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	db, err := sqlconnect.ConnectDb()
-
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
 
 	cert := "cert.pem"
 	key := "key.pem"

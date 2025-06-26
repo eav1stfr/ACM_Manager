@@ -27,3 +27,4 @@ server/key.pem
 # SSL config
 openssl.cnf
 
+dbcommands

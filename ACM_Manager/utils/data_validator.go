@@ -16,3 +16,11 @@ func ValidateMemberPost(newMembers []models.Member) error {
 	}
 	return nil
 }
+
+func ValidateTaskPost(newTask models.Task) error {
+	err := validate.Struct(newTask)
+	if err != nil {
+		return InvalidRequestPayloadError
+	}
+	return nil
+}
