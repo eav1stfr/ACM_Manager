@@ -48,4 +48,7 @@ var (
 	CommitingTransactionError = &AppError{
 		errMessage: "error commiting transaction",
 		statusCode: http.StatusInternalServerError}
+	MissingRequiredParametersError = &AppError{
+		errMessage: "missing required query parameters",
+		statusCode: http.StatusBadRequest}
 )

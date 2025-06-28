@@ -16,14 +16,68 @@ func CreateMeetingDbHandler(meeting models.Meeting) (models.Meeting, error) {
 		return models.Meeting{}, err
 	}
 	defer db.Close()
-	query := "INSERT INTO meetings (venue, time, repeated, department_id) VALUES ($1, $2, $3, $4) RETURNING *"
 	var createdMeeting models.Meeting
+
+	query := "INSERT INTO meetings (venue, time, repeated, department_id) VALUES ($1, $2, $3, $4) RETURNING *"
+
 	err = db.Get(&createdMeeting, query, meeting.Venue, meeting.Date, meeting.Repeated, meeting.DepartmentID)
 	if err != nil {
 		log.Println(err)
 		return createdMeeting, utils.DatabaseQueryError
 	}
+
+	if meeting.DepartmentID == nil {
+		err = insertAttendanceForAllMembers(db, createdMeeting.ID)
+		if err != nil {
+			log.Println("Failed to populate attendance:", err)
+			return createdMeeting, utils.DatabaseQueryError
+		}
+	} else {
+		err = insertAttendanceForDepMembers(db, createdMeeting.ID, *meeting.DepartmentID)
+		if err != nil {
+			log.Println("Failed to populate attendance:", err)
+			return createdMeeting, utils.DatabaseQueryError
+		}
+	}
+
 	return createdMeeting, nil
+}
+
+func insertAttendanceForAllMembers(db *sqlx.DB, meetingID int) error {
+	query := "SELECT id FROM members WHERE role = 'member' OR role = 'head'"
+	var ids []int64
+	err := db.Select(&ids, query)
+	if err != nil {
+		return err
+	}
+	fmt.Println(ids)
+	fmt.Println(len(ids))
+	query = "INSERT INTO meeting_attendance (meeting_id, member_id) VALUES ($1, $2)"
+	for _, id := range ids {
+		_, err = db.Exec(query, meetingID, id)
+		if err != nil {
+			return err
+		}
+	}
+	return err
+}
+
+func insertAttendanceForDepMembers(db *sqlx.DB, meetingID int, depID string) error {
+	query := "SELECT member_id FROM department_members WHERE department_name = $1"
+	var ids []int64
+	err := db.Select(&ids, query, depID)
+	if err != nil {
+		return utils.DatabaseQueryError
+	}
+	fmt.Println(ids)
+	query = "INSERT INTO meeting_attendance (meeting_id, member_id) VALUES ($1, $2)"
+	for _, id := range ids {
+		_, err = db.Exec(query, meetingID, id)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func DeleteMeetingDbHandler(meetingId string) (int, error) {

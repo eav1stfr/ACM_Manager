@@ -14,7 +14,7 @@ func Router() http.Handler {
 	registerRegularMembersRoutes(r)
 	registerTaskRoutes(r)
 	registerMeetingsRouter(r)
+	registerAttendanceRoutes(r)
 
 	return r
-
 }
