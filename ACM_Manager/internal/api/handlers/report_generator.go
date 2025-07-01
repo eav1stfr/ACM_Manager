@@ -4,9 +4,11 @@ import (
 	"acmmanager/internal/models"
 	"acmmanager/internal/sqlconnect"
 	"acmmanager/utils"
+	"encoding/json"
 	"github.com/phpdave11/gofpdf"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 func GenerateReportForMember(w http.ResponseWriter, r *http.Request) {
@@ -44,6 +46,12 @@ func GenerateReportForMember(w http.ResponseWriter, r *http.Request) {
 }
 
 func GenerateReportForDepartment(w http.ResponseWriter, r *http.Request) {
+	var startDate *time.Time
+	err := json.NewDecoder(r.Body).Decode(&startDate)
+	if err != nil {
+		http.Error(w, utils.InvalidRequestPayloadError.Error(), utils.InvalidRequestPayloadError.GetStatusCode())
+		return
+	}
 	depId := r.URL.Query().Get("dep_id")
 	if depId == "" {
 		http.Error(w, utils.InvalidRequestPayloadError.Error(), utils.InvalidRequestPayloadError.GetStatusCode())
