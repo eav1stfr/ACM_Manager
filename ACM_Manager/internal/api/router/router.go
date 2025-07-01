@@ -15,6 +15,6 @@ func Router() http.Handler {
 	registerTaskRoutes(r)
 	registerMeetingsRouter(r)
 	registerAttendanceRoutes(r)
-
+	registerReportRoute(r)
 	return r
 }

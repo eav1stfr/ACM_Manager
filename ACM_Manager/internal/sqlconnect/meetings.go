@@ -170,3 +170,35 @@ func getDepsOfMember(memberId int) ([]string, error) {
 	}
 	return deps, nil
 }
+
+func GetAttendanceCount(id string) (int, int, error) {
+	memberId, err := strconv.Atoi(id)
+	if err != nil {
+		return 0, 0, utils.InvalidRequestPayloadError
+	}
+	db, err := ConnectDb()
+	if err != nil {
+		return 0, 0, err
+	}
+	defer db.Close()
+
+	query := "SELECT COUNT(*) FROM meeting_attendance WHERE member_id = $1 AND attended = $2"
+	var countAttended int
+	err = db.Get(&countAttended, query, memberId, "true")
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return 0, 0, utils.UnitNotFoundError
+		}
+		return 0, 0, utils.DatabaseQueryError
+	}
+	fmt.Println(countAttended)
+	var countMissed int
+	err = db.Get(&countMissed, query, memberId, "false")
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return 0, 0, utils.UnitNotFoundError
+		}
+		return 0, 0, utils.DatabaseQueryError
+	}
+	return countAttended, countMissed, nil
+}
