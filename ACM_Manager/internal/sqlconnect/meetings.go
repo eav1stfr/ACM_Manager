@@ -199,7 +199,6 @@ func GetAttendanceCount(id string, date *time.Time) (int, int, error) {
 		}
 		return 0, 0, utils.DatabaseQueryError
 	}
-	fmt.Println(countAttended)
 	args[1] = "false"
 	var countMissed int
 	err = db.Get(&countMissed, query, args...)

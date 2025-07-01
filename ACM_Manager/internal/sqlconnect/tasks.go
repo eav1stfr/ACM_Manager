@@ -145,14 +145,12 @@ func MarkTaskAsDoneDbHandler(taskIdStr string) (models.Task, error) {
 	}
 	defer db.Close()
 	var updatedTask models.Task
-	query := "UPDATE tasks SET status = true, finished_at = CURRENT_DATE WHERE id = $1 RETURNING *"
+	query := "UPDATE tasks SET status = true, finished_at = NOW() WHERE id = $1 RETURNING *"
 	err = db.Get(&updatedTask, query, taskID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return models.Task{}, utils.UnitNotFoundError
 		}
-		log.Println("ERR HERE")
-		log.Println(err)
 		return models.Task{}, utils.DatabaseQueryError
 	}
 	return updatedTask, nil

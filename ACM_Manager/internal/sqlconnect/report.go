@@ -2,21 +2,12 @@ package sqlconnect
 
 import (
 	"acmmanager/internal/models"
+	"acmmanager/utils"
+	"database/sql"
+	"log"
 	"strconv"
 	"time"
 )
-
-//
-//func GenerateReportForMemberDbHandler(memberId string) (map[string]interface{}, error) {
-//	// connect db
-//	db, err :=
-//	// get member info
-//
-//	// get list of all tasks for a member
-//
-//	// get attendance report : meeting info : skipped --> then get the statistics (missed / total)
-//
-//}
 
 func GetMemberDataForReport(memberId string, startDate *time.Time) (models.Member, []models.Task, []models.Task, int, int, error) {
 	id, err := strconv.Atoi(memberId)
@@ -27,11 +18,7 @@ func GetMemberDataForReport(memberId string, startDate *time.Time) (models.Membe
 	if err != nil {
 		return models.Member{}, nil, nil, 0, 0, err
 	}
-	tasksDone, err := GetTasksDbHandler(memberId, "true")
-	if err != nil {
-		return models.Member{}, nil, nil, 0, 0, err
-	}
-	tasksToDo, err := GetTasksDbHandler(memberId, "false")
+	tasksDone, tasksToDo, err := getTasksInfo(memberId, startDate)
 	if err != nil {
 		return models.Member{}, nil, nil, 0, 0, err
 	}
@@ -40,4 +27,42 @@ func GetMemberDataForReport(memberId string, startDate *time.Time) (models.Membe
 		return models.Member{}, nil, nil, 0, 0, err
 	}
 	return member, tasksDone, tasksToDo, countAttended, countMissed, nil
+}
+
+func getTasksInfo(memberId string, date *time.Time) ([]models.Task, []models.Task, error) {
+	db, err := ConnectDb()
+	if err != nil {
+		log.Println("ERR HERE")
+		log.Println(err)
+		return nil, nil, err
+	}
+	defer db.Close()
+	var query string
+	id, err := strconv.Atoi(memberId)
+	if err != nil {
+		return nil, nil, utils.InvalidRequestPayloadError
+	}
+	args := []interface{}{id, "true"}
+	if date != nil {
+		query = "SELECT * FROM tasks WHERE id IN (SELECT task_id FROM member_tasks WHERE member_id = $1) AND status = $2 AND finished_at >= $3"
+		args = append(args, date)
+	} else {
+		query = "SELECT * FROM tasks WHERE id IN (SELECT task_id FROM member_tasks WHERE member_id = $1) AND status = $2"
+	}
+	var tasksDone []models.Task
+	err = db.Select(&tasksDone, query, args...)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			return nil, nil, utils.DatabaseQueryError
+		}
+	}
+	args[1] = "false"
+	var tasksToDo []models.Task
+	err = db.Select(&tasksToDo, query, args...)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			return nil, nil, utils.DatabaseQueryError
+		}
+	}
+	return tasksDone, tasksToDo, nil
 }
