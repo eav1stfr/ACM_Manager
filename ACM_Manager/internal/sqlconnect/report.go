@@ -3,6 +3,7 @@ package sqlconnect
 import (
 	"acmmanager/internal/models"
 	"strconv"
+	"time"
 )
 
 //
@@ -17,7 +18,7 @@ import (
 //
 //}
 
-func GetMemberDataForReport(memberId string) (models.Member, []models.Task, []models.Task, int, int, error) {
+func GetMemberDataForReport(memberId string, startDate *time.Time) (models.Member, []models.Task, []models.Task, int, int, error) {
 	id, err := strconv.Atoi(memberId)
 	if err != nil {
 		return models.Member{}, nil, nil, 0, 0, err
@@ -34,7 +35,7 @@ func GetMemberDataForReport(memberId string) (models.Member, []models.Task, []mo
 	if err != nil {
 		return models.Member{}, nil, nil, 0, 0, err
 	}
-	countAttended, countMissed, err := GetAttendanceCount(memberId)
+	countAttended, countMissed, err := GetAttendanceCount(memberId, startDate)
 	if err != nil {
 		return models.Member{}, nil, nil, 0, 0, err
 	}

@@ -8,6 +8,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"log"
 	"strconv"
+	"time"
 )
 
 func CreateMeetingDbHandler(meeting models.Meeting) (models.Meeting, error) {
@@ -171,7 +172,7 @@ func getDepsOfMember(memberId int) ([]string, error) {
 	return deps, nil
 }
 
-func GetAttendanceCount(id string) (int, int, error) {
+func GetAttendanceCount(id string, date *time.Time) (int, int, error) {
 	memberId, err := strconv.Atoi(id)
 	if err != nil {
 		return 0, 0, utils.InvalidRequestPayloadError
@@ -181,10 +182,17 @@ func GetAttendanceCount(id string) (int, int, error) {
 		return 0, 0, err
 	}
 	defer db.Close()
+	var query string
+	args := []interface{}{memberId, "true"}
+	if date != nil {
+		query = "SELECT COUNT(*) FROM meeting_attendance ma JOIN meetings m ON ma.meeting_id = m.id WHERE ma.member_id = $1 AND ma.attended = $2 AND m.time >= $3"
+		args = append(args, date)
+	} else {
+		query = "SELECT COUNT(*) FROM meeting_attendance WHERE member_id = $1 AND attended = $2"
+	}
 
-	query := "SELECT COUNT(*) FROM meeting_attendance WHERE member_id = $1 AND attended = $2"
 	var countAttended int
-	err = db.Get(&countAttended, query, memberId, "true")
+	err = db.Get(&countAttended, query, args...)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return 0, 0, utils.UnitNotFoundError
@@ -192,8 +200,9 @@ func GetAttendanceCount(id string) (int, int, error) {
 		return 0, 0, utils.DatabaseQueryError
 	}
 	fmt.Println(countAttended)
+	args[1] = "false"
 	var countMissed int
-	err = db.Get(&countMissed, query, memberId, "false")
+	err = db.Get(&countMissed, query, args...)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return 0, 0, utils.UnitNotFoundError

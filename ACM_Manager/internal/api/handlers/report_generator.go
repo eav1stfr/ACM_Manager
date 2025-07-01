@@ -12,13 +12,16 @@ import (
 )
 
 func GenerateReportForMember(w http.ResponseWriter, r *http.Request) {
+	var startDate *time.Time
+	json.NewDecoder(r.Body).Decode(&startDate)
+
 	memberId := r.URL.Query().Get("member_id")
 	if memberId == "" {
 		http.Error(w, utils.InvalidRequestPayloadError.Error(), utils.InvalidRequestPayloadError.GetStatusCode())
 		return
 	}
 
-	member, tasksDone, tasksToDo, countAttended, countMissed, err := sqlconnect.GetMemberDataForReport(memberId)
+	member, tasksDone, tasksToDo, countAttended, countMissed, err := sqlconnect.GetMemberDataForReport(memberId, startDate)
 	if err != nil {
 		if appErr, ok := err.(*utils.AppError); ok {
 			http.Error(w, appErr.Error(), appErr.GetStatusCode())
@@ -47,11 +50,8 @@ func GenerateReportForMember(w http.ResponseWriter, r *http.Request) {
 
 func GenerateReportForDepartment(w http.ResponseWriter, r *http.Request) {
 	var startDate *time.Time
-	err := json.NewDecoder(r.Body).Decode(&startDate)
-	if err != nil {
-		http.Error(w, utils.InvalidRequestPayloadError.Error(), utils.InvalidRequestPayloadError.GetStatusCode())
-		return
-	}
+	json.NewDecoder(r.Body).Decode(&startDate)
+
 	depId := r.URL.Query().Get("dep_id")
 	if depId == "" {
 		http.Error(w, utils.InvalidRequestPayloadError.Error(), utils.InvalidRequestPayloadError.GetStatusCode())
@@ -70,7 +70,7 @@ func GenerateReportForDepartment(w http.ResponseWriter, r *http.Request) {
 	var membersInfoForReport []models.MemberWithData
 	for _, member := range members {
 		memberId := strconv.Itoa(int(member.ID))
-		_, tasksDone, tasksToDo, countAttended, countMissed, err := sqlconnect.GetMemberDataForReport(memberId)
+		_, tasksDone, tasksToDo, countAttended, countMissed, err := sqlconnect.GetMemberDataForReport(memberId, startDate)
 		if err != nil {
 			if appErr, ok := err.(*utils.AppError); ok {
 				http.Error(w, appErr.Error(), appErr.GetStatusCode())
