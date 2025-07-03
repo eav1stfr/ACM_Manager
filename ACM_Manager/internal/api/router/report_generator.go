@@ -9,6 +9,5 @@ func registerReportRoute(r chi.Router) {
 	r.Route("/report", func(r chi.Router) {
 		r.Get("/member", handlers.GenerateReportForMember)
 		r.Get("/department", handlers.GenerateReportForDepartment)
-		r.Get("/", handlers.PDFHandler)
 	})
 }

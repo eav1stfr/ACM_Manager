@@ -5,7 +5,6 @@ import (
 	"acmmanager/internal/sqlconnect"
 	"acmmanager/utils"
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -37,7 +36,7 @@ func GetTasks(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func CreateTasks(w http.ResponseWriter, r *http.Request) {
+func CreateTask(w http.ResponseWriter, r *http.Request) {
 	var task models.Task
 	err := json.NewDecoder(r.Body).Decode(&task)
 	if err != nil {
@@ -80,7 +79,7 @@ func AssignTask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, utils.InvalidRequestPayloadError.Error(), utils.InvalidRequestPayloadError.GetStatusCode())
 		return
 	}
-	res, err := sqlconnect.AssignTaskDbHandler(taskIdStr, memberIdStr)
+	_, err := sqlconnect.AssignTaskDbHandler(taskIdStr, memberIdStr)
 	if err != nil {
 		if appErr, ok := err.(*utils.AppError); ok {
 			http.Error(w, appErr.Error(), appErr.GetStatusCode())
@@ -89,7 +88,6 @@ func AssignTask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, utils.UnknownInternalServerError.Error(), utils.UnknownInternalServerError.GetStatusCode())
 		return
 	}
-	fmt.Println(res)
 }
 
 func MarkTaskAsDone(w http.ResponseWriter, r *http.Request) {
@@ -122,7 +120,7 @@ func MarkTaskAsDone(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteTasks(w http.ResponseWriter, r *http.Request) {
-	idStr := r.URL.Query().Get("id")
+	idStr := r.URL.Query().Get("task_id")
 	_, err := sqlconnect.DeleteTaskDbHandler(idStr)
 	if err != nil {
 		if appErr, ok := err.(*utils.AppError); ok {

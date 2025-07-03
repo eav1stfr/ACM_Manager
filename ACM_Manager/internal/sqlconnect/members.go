@@ -5,7 +5,6 @@ import (
 	"acmmanager/utils"
 	"database/sql"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -175,15 +174,12 @@ func PatchMembersDbHandler(updates []map[string]interface{}) error {
 	}
 	for _, update := range updates {
 		idStr, ok := update["id"].(float64)
-		log.Println("ID IS:", idStr)
 		if !ok {
-			log.Println("inside db handler err 1")
 			tx.Rollback()
 			return utils.InvalidRequestPayloadError
 		}
 		id := int64(idStr)
 		if err != nil {
-			log.Println("inside db handler err 1")
 			return utils.InvalidRequestPayloadError
 		}
 		memberFromDb, err := GetOneMemberByIdDbHandler(id)
@@ -228,7 +224,3 @@ func PatchMembersDbHandler(updates []map[string]interface{}) error {
 	}
 	return nil
 }
-
-//func getDepartmentsOfMemberDbHandler(memberId string) ([]string, error) {
-//
-//}

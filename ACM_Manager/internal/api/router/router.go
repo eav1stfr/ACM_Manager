@@ -9,7 +9,7 @@ import (
 func Router() http.Handler {
 	r := chi.NewRouter()
 
-	r.Get("/", handlers.HelloHandler)
+	r.Get("/ping", handlers.PingTheServerToAvoidColdSleep)
 
 	registerRegularMembersRoutes(r)
 	registerTaskRoutes(r)

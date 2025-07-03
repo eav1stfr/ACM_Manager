@@ -11,12 +11,3 @@ type Task struct {
 	Assigned    bool       `db:"assigned" json:"assigned"`
 	FinishedAt  *time.Time `db:"finished_at,omitempty" json:"finished_at"`
 }
-
-//CREATE TABLE tasks (
-//	id SERIAL PRIMARY KEY,
-//	description TEXT NOT NULL,
-//	deadline TIMESTAMP NOT NULL,
-//	complexity INT NOT NULL,
-//	status BOOLEAN DEFAULT FALSE,
-//	assigned BOOLEAN DEFAULT FALSE
-//);

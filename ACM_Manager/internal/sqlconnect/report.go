@@ -4,7 +4,6 @@ import (
 	"acmmanager/internal/models"
 	"acmmanager/utils"
 	"database/sql"
-	"log"
 	"strconv"
 	"time"
 )
@@ -32,8 +31,6 @@ func GetMemberDataForReport(memberId string, startDate *time.Time) (models.Membe
 func getTasksInfo(memberId string, date *time.Time) ([]models.Task, []models.Task, error) {
 	db, err := ConnectDb()
 	if err != nil {
-		log.Println("ERR HERE")
-		log.Println(err)
 		return nil, nil, err
 	}
 	defer db.Close()

@@ -20,11 +20,4 @@
 # Env
 *.env
 
-# SSL keys
-server/cert.pem
-server/key.pem
-
-# SSL config
-openssl.cnf
-
 dbcommands

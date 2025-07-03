@@ -5,7 +5,7 @@ import (
 	"acmmanager/internal/sqlconnect"
 	"acmmanager/utils"
 	"encoding/json"
-	"github.com/phpdave11/gofpdf"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -31,7 +31,7 @@ func GenerateReportForMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pdfBytes, err := utils.GeneratePDF(member, tasksDone, tasksToDo, countAttended, countMissed)
+	pdfBytes, err := utils.GeneratePDF(member, tasksDone, tasksToDo, countAttended, countMissed, startDate)
 	if err != nil {
 		if appErr, ok := err.(*utils.AppError); ok {
 			http.Error(w, appErr.Error(), appErr.GetStatusCode())
@@ -41,7 +41,7 @@ func GenerateReportForMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/pdf")
-	w.Header().Set("Content-Disposition", "inline; filename=from-function.pdf")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("inline; filename=%s-%s.pdf", member.FirstName, member.LastName))
 	_, err = w.Write(pdfBytes)
 	if err != nil {
 		http.Error(w, utils.UnknownInternalServerError.Error(), utils.UnknownInternalServerError.GetStatusCode())
@@ -89,7 +89,7 @@ func GenerateReportForDepartment(w http.ResponseWriter, r *http.Request) {
 		}
 		membersInfoForReport = append(membersInfoForReport, memberInfo)
 	}
-	pdfBytes, err := utils.GeneratePDFForDepartment(membersInfoForReport, depId)
+	pdfBytes, err := utils.GeneratePDFForDepartment(membersInfoForReport, depId, startDate)
 	if err != nil {
 		if appErr, ok := err.(*utils.AppError); ok {
 			http.Error(w, appErr.Error(), appErr.GetStatusCode())
@@ -99,24 +99,9 @@ func GenerateReportForDepartment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/pdf")
-	w.Header().Set("Content-Disposition", "inline; filename=from-function.pdf")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("inline; filename=%s-report", depId))
 	_, err = w.Write(pdfBytes)
 	if err != nil {
 		http.Error(w, utils.UnknownInternalServerError.Error(), utils.UnknownInternalServerError.GetStatusCode())
-	}
-}
-
-func PDFHandler(w http.ResponseWriter, r *http.Request) {
-	pdf := gofpdf.New("P", "mm", "A4", "")
-	pdf.AddPage()
-	pdf.SetFont("Arial", "B", 16)
-	pdf.Cell(40, 10, "Hello, PDF from Go HTTP server!")
-
-	w.Header().Set("Content-Type", "application/pdf")
-	w.Header().Set("Content-Disposition", "inline; filename=example.pdf")
-	err := pdf.Output(w)
-	if err != nil {
-		http.Error(w, "failed to generate PDF", http.StatusInternalServerError)
-		return
 	}
 }

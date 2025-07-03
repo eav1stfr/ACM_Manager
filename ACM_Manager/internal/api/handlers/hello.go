@@ -3,12 +3,11 @@ package handlers
 import (
 	"acmmanager/utils"
 	"encoding/json"
-	"log"
 	"net/http"
 )
 
-func HelloHandler(w http.ResponseWriter, r *http.Request) {
-	message := "Hello!"
+func PingTheServerToAvoidColdSleep(w http.ResponseWriter, r *http.Request) {
+	message := "Server was pinged!"
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -18,6 +17,4 @@ func HelloHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, utils.EncodingResponseError.Error(), utils.EncodingResponseError.GetStatusCode())
 		return
 	}
-
-	log.Println("Successfully responded to hello request")
 }

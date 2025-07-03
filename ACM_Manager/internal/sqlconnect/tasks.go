@@ -4,7 +4,6 @@ import (
 	"acmmanager/internal/models"
 	"acmmanager/utils"
 	"database/sql"
-	"log"
 	"strconv"
 )
 
@@ -39,8 +38,6 @@ func GetTasksDbHandler(idStr string, status string) ([]models.Task, error) {
 		query := "SELECT * FROM tasks"
 		err = db.Select(&tasks, query)
 		if err != nil {
-			log.Println("ERR HERE")
-			log.Println(err)
 			return nil, utils.DatabaseQueryError
 		}
 	}

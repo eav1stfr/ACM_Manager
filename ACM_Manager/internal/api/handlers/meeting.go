@@ -5,7 +5,6 @@ import (
 	"acmmanager/internal/sqlconnect"
 	"acmmanager/utils"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 )
@@ -14,7 +13,6 @@ func CreateMeeting(w http.ResponseWriter, r *http.Request) {
 	var meeting models.Meeting
 	err := json.NewDecoder(r.Body).Decode(&meeting)
 	if err != nil {
-		fmt.Println("ERR HERE 1")
 		http.Error(w, utils.InvalidRequestPayloadError.Error(), utils.InvalidRequestPayloadError.GetStatusCode())
 		return
 	}
@@ -33,7 +31,6 @@ func CreateMeeting(w http.ResponseWriter, r *http.Request) {
 	}
 	createdMeeting, err := sqlconnect.CreateMeetingDbHandler(meeting)
 	if err != nil {
-		fmt.Println("ERR HERE 3")
 		if appErr, ok := err.(*utils.AppError); ok {
 			http.Error(w, appErr.Error(), appErr.GetStatusCode())
 			return

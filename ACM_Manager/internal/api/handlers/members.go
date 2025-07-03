@@ -5,7 +5,6 @@ import (
 	"acmmanager/internal/sqlconnect"
 	"acmmanager/utils"
 	"encoding/json"
-	"log"
 	"net/http"
 )
 
@@ -47,7 +46,6 @@ func CreateMembersHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err = utils.ValidateMemberPost(newMembers); err != nil {
 		if appErr, ok := err.(*utils.AppError); ok {
-			log.Println("ERR HERE 1")
 			http.Error(w, appErr.Error(), appErr.GetStatusCode())
 			return
 		}
@@ -59,7 +57,6 @@ func CreateMembersHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if appErr, ok := err.(*utils.AppError); ok {
 			http.Error(w, appErr.Error(), appErr.GetStatusCode())
-			log.Println("ERR HERE 2")
 			return
 		}
 		http.Error(w, utils.UnknownInternalServerError.Error(), utils.UnknownInternalServerError.GetStatusCode())
@@ -94,7 +91,6 @@ func DeleteMembersHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if appErr, ok := err.(*utils.AppError); ok {
 			http.Error(w, appErr.Error(), appErr.GetStatusCode())
-			log.Println("ERR HERE 2")
 			return
 		}
 		http.Error(w, utils.UnknownInternalServerError.Error(), utils.UnknownInternalServerError.GetStatusCode())

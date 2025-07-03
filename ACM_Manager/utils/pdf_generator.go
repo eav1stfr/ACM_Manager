@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"github.com/phpdave11/gofpdf"
 	"strings"
+	"time"
 )
 
-func GeneratePDF(member models.Member, tasksDone, tasksToDo []models.Task, countAttended, countMissed int) ([]byte, error) {
+func GeneratePDF(member models.Member, tasksDone, tasksToDo []models.Task, countAttended, countMissed int, date *time.Time) ([]byte, error) {
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pdf.AddPage()
 
@@ -24,7 +25,13 @@ func GeneratePDF(member models.Member, tasksDone, tasksToDo []models.Task, count
 	pdf.CellFormat(0, 10, fmt.Sprintf("%s %s", member.FirstName, member.LastName), "", 1, "C", false, 0, "")
 
 	pdf.SetFont("Arial", "", 12)
-	pdf.CellFormat(0, 8, "10.08.2025 - 11.08.2025", "", 1, "C", false, 0, "")
+	if date == nil {
+		//pdf.CellFormat(0, 8, "10.08.2025 - 11.08.2025", "", 1, "C", false, 0, "")
+		pdf.CellFormat(0, 8, fmt.Sprintf("01.09.2025 - %s", time.Now().Format("02.01.2006")), "", 1, "C", false, 0, "")
+
+	} else {
+		pdf.CellFormat(0, 8, fmt.Sprintf("%s - %s", date.Format("02.01.2006"), time.Now().Format("02.01.2006")), "", 1, "C", false, 0, "")
+	}
 	pdf.Ln(5)
 
 	// Draw line
@@ -104,7 +111,7 @@ func formatTask(i int, text string) string {
 	return string(rune('0'+i)) + ". " + text
 }
 
-func GeneratePDFForDepartment(members []models.MemberWithData, depId string) ([]byte, error) {
+func GeneratePDFForDepartment(members []models.MemberWithData, depId string, date *time.Time) ([]byte, error) {
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pdf.SetAutoPageBreak(true, 15)
 	pdf.AddPage()
@@ -122,7 +129,12 @@ func GeneratePDFForDepartment(members []models.MemberWithData, depId string) ([]
 	pdf.CellFormat(0, 12, strings.ToUpper(depId), "", 1, "C", false, 0, "")
 
 	pdf.SetFont("Arial", "", 12)
-	pdf.CellFormat(0, 8, "10.08.2025 - 11.08.2025", "", 1, "C", false, 0, "")
+	if date == nil {
+		pdf.CellFormat(0, 8, fmt.Sprintf("01.09.2025 - %s", time.Now().Format("02.01.2006")), "", 1, "C", false, 0, "")
+
+	} else {
+		pdf.CellFormat(0, 8, fmt.Sprintf("%s - %s", date.Format("02.01.2006"), time.Now().Format("02.01.2006")), "", 1, "C", false, 0, "")
+	}
 	pdf.Ln(5)
 
 	pdf.SetDrawColor(100, 100, 100)

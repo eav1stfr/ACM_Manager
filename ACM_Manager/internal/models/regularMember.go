@@ -11,13 +11,3 @@ type Member struct {
 	Role      string    `db:"role" json:"role" validate:"required"`
 	Birthday  time.Time `db:"birthday" json:"birthday" validate:"required"`
 }
-
-//CREATE TABLE members (
-//	id BIGINT PRIMARY KEY,
-//	first_name TEXT NOT NULL,
-//	last_name TEXT NOT NULL,
-//	email TEXT UNIQUE NOT NULL,
-//	telegram TEXT,
-//	role TEXT NOT NULL,
-//	birthday DATE NOT NULL
-//);

@@ -4,7 +4,6 @@ import (
 	"acmmanager/internal/models"
 	"acmmanager/utils"
 	"database/sql"
-	"fmt"
 	"github.com/jmoiron/sqlx"
 	"log"
 	"strconv"
@@ -51,8 +50,6 @@ func insertAttendanceForAllMembers(db *sqlx.DB, meetingID int) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(ids)
-	fmt.Println(len(ids))
 	query = "INSERT INTO meeting_attendance (meeting_id, member_id) VALUES ($1, $2)"
 	for _, id := range ids {
 		_, err = db.Exec(query, meetingID, id)
@@ -70,7 +67,6 @@ func insertAttendanceForDepMembers(db *sqlx.DB, meetingID int, depID string) err
 	if err != nil {
 		return utils.DatabaseQueryError
 	}
-	fmt.Println(ids)
 	query = "INSERT INTO meeting_attendance (meeting_id, member_id) VALUES ($1, $2)"
 	for _, id := range ids {
 		_, err = db.Exec(query, meetingID, id)
@@ -146,7 +142,6 @@ func GetMeetingsForWeekDbHandler(memberId string) ([]models.Meeting, error) {
 			if err != nil {
 				return nil, utils.DatabaseQueryError
 			}
-			fmt.Println(queryWithIn)
 			meetings = append(meetings, meetingsForDep...)
 		}
 
