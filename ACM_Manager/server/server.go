@@ -2,6 +2,7 @@ package main
 
 import (
 	"acmmanager/internal/api/router"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"log"
 	"net/http"
@@ -10,10 +11,10 @@ import (
 
 func main() {
 
-	//err := godotenv.Load()
-	//if err != nil {
-	//	panic(err)
-	//}
+	err := godotenv.Load()
+	if err != nil {
+		panic(err)
+	}
 
 	mux := router.Router()
 	server := &http.Server{
@@ -21,7 +22,7 @@ func main() {
 		Handler: mux,
 	}
 	log.Println("server running on port 3000")
-	err := server.ListenAndServe()
+	err = server.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
 	}

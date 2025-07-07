@@ -8,6 +8,13 @@ import (
 
 var validate = validator.New()
 
+func ValidatePostMember(newMember models.Member) error {
+	err := validate.Struct(newMember)
+	if err != nil {
+		return InvalidRequestPayloadError
+	}
+	return nil
+}
 func ValidateMemberPost(newMembers []models.Member) error {
 	for _, member := range newMembers {
 		err := validate.Struct(member)

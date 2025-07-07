@@ -5,6 +5,7 @@ import (
 	"acmmanager/utils"
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -65,6 +66,22 @@ func GetOneMemberByIdDbHandler(id int64) (models.Member, error) {
 	return member, nil
 }
 
+func PostMemberDbHandler(newMember models.Member) error {
+	db, err := ConnectDb()
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	query := "INSERT INTO members (id, first_name, last_name, email, telegram, role, birthday) VALUES ($1, $2, $3, $4, $5, $6, $7)"
+	_, err = db.Exec(query, newMember.ID, newMember.FirstName, newMember.LastName, newMember.Email, newMember.Telegram, newMember.Role, newMember.Birthday)
+	if err != nil {
+		log.Println(err)
+		return utils.DatabaseQueryError
+	}
+	return nil
+}
+
 func PostMembersDBHandler(newMembers []models.Member) ([]models.Member, error) {
 	db, err := ConnectDb()
 	if err != nil {
@@ -74,6 +91,7 @@ func PostMembersDBHandler(newMembers []models.Member) ([]models.Member, error) {
 
 	tx, err := db.Beginx()
 	if err != nil {
+		log.Println("ERR HERE 1", err)
 		return nil, utils.DatabaseQueryError
 	}
 
@@ -93,6 +111,7 @@ func PostMembersDBHandler(newMembers []models.Member) ([]models.Member, error) {
 		stmt, err := tx.PrepareNamed(query)
 		if err != nil {
 			tx.Rollback()
+			log.Println("ERR HERE 2", err)
 			return nil, utils.DatabaseQueryError
 		}
 		defer stmt.Close()
@@ -100,11 +119,13 @@ func PostMembersDBHandler(newMembers []models.Member) ([]models.Member, error) {
 		_, err = stmt.Exec(namedArgs)
 		if err != nil {
 			tx.Rollback()
+			log.Println("ERR HERE 3", err)
 			return nil, utils.DatabaseQueryError
 		}
 		addedMembers = append(addedMembers, member)
 	}
 	if err = tx.Commit(); err != nil {
+		log.Println("ERR HERE 4", err)
 		return nil, utils.DatabaseQueryError
 	}
 	return addedMembers, nil
