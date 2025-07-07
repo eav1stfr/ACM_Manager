@@ -40,9 +40,9 @@ func GetMembersDBHandler(dep string, idStr string) ([]models.Member, error) {
 		member, err := GetOneMemberByIdDbHandler(int64(id))
 		members = append(members, member)
 	} else {
-		query := "SELECT id, first_name, last_name, email, telegram, role, birthday FROM members WHERE role = $1 OR role = $2"
+		query := "SELECT id, first_name, last_name, email, telegram, role, birthday FROM members"
 
-		err = db.Select(&members, query, "member", "head")
+		err = db.Select(&members, query)
 		if err != nil {
 			return nil, utils.DatabaseQueryError
 		}
