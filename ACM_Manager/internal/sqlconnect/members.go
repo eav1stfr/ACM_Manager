@@ -82,6 +82,28 @@ func PostMemberDbHandler(newMember models.Member) error {
 	return nil
 }
 
+func DeleteAllMembersDbHandler() error {
+	db, err := ConnectDb()
+	if err != nil {
+		return utils.ConnectingToDatabaseError
+	}
+	defer db.Close()
+
+	query := "DELETE FROM members"
+	res, err := db.Exec(query)
+	if err != nil {
+		return utils.DatabaseQueryError
+	}
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return utils.UnknownInternalServerError
+	}
+	if rows == 0 {
+		return utils.DatabaseQueryError
+	}
+	return nil
+}
+
 func PostMembersDBHandler(newMembers []models.Member) ([]models.Member, error) {
 	db, err := ConnectDb()
 	if err != nil {

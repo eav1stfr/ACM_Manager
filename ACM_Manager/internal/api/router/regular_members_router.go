@@ -11,5 +11,6 @@ func registerRegularMembersRoutes(r chi.Router) {
 		r.Post("/", handlers.CreateMemberHandler)
 		r.Delete("/", handlers.DeleteMembersHandler)
 		r.Patch("/", handlers.PatchMembersHandler)
+		r.Delete("/delete_all", handlers.DeleteAllMembers)
 	})
 }

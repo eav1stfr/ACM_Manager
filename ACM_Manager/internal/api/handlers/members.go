@@ -149,6 +149,17 @@ func DeleteMembersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func DeleteAllMembers(w http.ResponseWriter, r *http.Request) {
+	err := sqlconnect.DeleteAllMembersDbHandler()
+	if err != nil {
+		if appErr, ok := err.(*utils.AppError); ok {
+			http.Error(w, appErr.Error(), appErr.GetStatusCode())
+			return
+		}
+	}
+
+}
+
 func PatchMembersHandler(w http.ResponseWriter, r *http.Request) {
 	var updates []map[string]interface{}
 	err := json.NewDecoder(r.Body).Decode(&updates)
